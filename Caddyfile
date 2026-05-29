@@ -1,0 +1,19 @@
+vikunja.costantino.es {
+    reverse_proxy vikunja:3456
+    tls /etc/caddy/certs/vikunja.costantino.es.pem /etc/caddy/certs/vikunja.costantino.es-key.pem
+}
+
+grafana.costantino.es {
+    reverse_proxy grafana:3000
+    tls /etc/caddy/certs/vikunja.costantino.es.pem /etc/caddy/certs/vikunja.costantino.es-key.pem
+}
+
+prometheus.costantino.es {
+    reverse_proxy prometheus:9090
+    tls /etc/caddy/certs/vikunja.costantino.es.pem /etc/caddy/certs/vikunja.costantino.es-key.pem
+}
+
+gitlab.costantino.es {
+    reverse_proxy 192.168.1.125:80
+    tls /etc/caddy/certs/vikunja.costantino.es.pem /etc/caddy/certs/vikunja.costantino.es-key.pem
+}

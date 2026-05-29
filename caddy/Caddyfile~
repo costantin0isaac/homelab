@@ -1,0 +1,4 @@
+vikunja.costantino.es {
+    reverse_proxy vikunja:3456
+    tls internal
+}

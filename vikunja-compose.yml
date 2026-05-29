@@ -1,0 +1,42 @@
+services:
+  vikunja:
+    image: vikunja/vikunja:latest
+    container_name: vikunja
+    restart: unless-stopped
+    user: "0"
+    environment:
+      VIKUNJA_DATABASE_TYPE: postgres
+      VIKUNJA_DATABASE_HOST: vikunja-postgres
+      VIKUNJA_DATABASE_PORT: 5432
+      VIKUNJA_DATABASE_USER: vikunja
+      VIKUNJA_DATABASE_PASSWORD:
+      VIKUNJA_DATABASE_DATABASE: vikunja
+      VIKUNJA_SERVICE_PUBLICURL: https://vikunja.costantino.es/
+      VIKUNJA_FRONTEND_URL: https://vikunja.costantino.es/
+    volumes:
+      - vikunja_files:/app/vikunja/files
+    depends_on:
+      - vikunja-postgres
+    networks:
+      - costantino-net
+
+  vikunja-postgres:
+    image: postgres:15-alpine
+    container_name: vikunja-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vikunja
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: vikunja
+    volumes:
+      - vikunja_db:/var/lib/postgresql/data
+    networks:
+      - costantino-net
+
+volumes:
+  vikunja_files:
+  vikunja_db:
+
+networks:
+  costantino-net:
+    external: true
