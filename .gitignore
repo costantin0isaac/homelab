@@ -1,0 +1,12 @@
+# Secrets
+.env
+*.env
+
+# Certificates
+*.pem
+*·key
+*-key.pem
+certs/
+
+# Local data
+*.log

@@ -1,0 +1,25 @@
+services:
+  pve-exporter:
+    image: prompve/prometheus-pve-exporter:latest
+    container_name: pve-exporter
+    restart: unless-stopped
+    ports:
+      - "9221:9221"
+    env_file:
+      - ../.env
+    environment:
+      PVE_USER: ${PVE_USER}
+      PVE_TOKEN_NAME: ${PVE_TOKEN_NAME}
+      PVE_TOKEN_VALUE: ${PVE_TOKEN_VALUE}
+      PVE_VERIFY_SSL: false
+    command:
+      - '--config.file=/etc/prometheus/pve.yml'
+      - '--web.listen-address=0.0.0.0:9221'
+    volumes:
+      - ./config/pve.yml:/etc/prometheus/pve.yml:ro
+    networks:
+      - costantino-net
+
+networks:
+  costantino-net:
+    external: true
