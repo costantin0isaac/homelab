@@ -17,3 +17,8 @@
     reverse_proxy {$GITLAB_BACKEND}
     tls {$CERT_FILE} {$CERT_KEY}
 }
+
+{$STIRLING_HOST} {
+    reverse_proxy {$STIRLING_BACKEND}
+    tls {$CERT_FILE} {$CERT_KEY}
+}

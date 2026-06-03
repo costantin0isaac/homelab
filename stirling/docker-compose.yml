@@ -1,0 +1,45 @@
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    volumes:
+      # Persistent data storage
+      - ./stirling-data/tessdata:/usr/share/tessdata    # OCR language files
+      - ./stirling-data/configs:/configs                 # Settings & database
+      - ./stirling-data/logs:/logs                       # Application logs
+      - ./stirling-data/customFiles:/customFiles:rw      # Custom branding files
+      - ./stirling-data/pipeline:/pipeline               # Automation configs
+    environment:
+      # Core Settings
+      - SECURITY_ENABLELOGIN=true
+
+      # Language & Localization
+      - LANGS=es_ES
+
+      # System Configuration
+      - SYSTEM_DEFAULTLOCALE=es-ES           # Default locale
+      - SYSTEM_GOOGLEVISIBILITY=false        # Hide from search engines
+      - SYSTEM_ROOTURIPATH=/                 # Base URL path
+      - SYSTEM_CONNECTIONTIMEOUTMINUTES=5    # Connection timeout
+      - SYSTEM_MAXFILESIZE=2000              # Max file size in MB
+
+      # Optional: Logging
+      - SYSTEM_CUSTOMSTATICFILEPATH=/customFiles/static/  # Custom files path
+
+    restart: unless-stopped
+    networks:
+      - costantino-net
+
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+
+networks:
+  costantino-net:
+    external: true
