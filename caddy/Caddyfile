@@ -1,19 +1,19 @@
-{env.VIKUNJA_DOMAIN} {
-    reverse_proxy {env.VIKUNJA_BACKEND}
-    tls {env.CERT_FILE} {env.CERT_KEY}
+{$VIKUNJA_HOST} {
+    reverse_proxy {$VIKUNJA_BACKEND}
+    tls {$CERT_FILE} {$CERT_KEY}
 }
 
-{env.GRAFANA_DOMAIN} {
-    reverse_proxy {env.GRAFANA_BACKEND}
-    tls {env.CERT_FILE} {env.CERT_KEY}
+{$GRAFANA_HOST} {
+    reverse_proxy {$GRAFANA_BACKEND}
+    tls {$CERT_FILE} {$CERT_KEY}
 }
 
-{env.PROMETHEUS_DOMAIN} {
-    reverse_proxy {env.PROMETHEUS_BACKEND}
-    tls {env.CERT_FILE} {env.CERT_KEY}
+{$PROMETHEUS_HOST} {
+    reverse_proxy {$PROMETHEUS_BACKEND}
+    tls {$CERT_FILE} {$CERT_KEY}
 }
 
-{env.GITLAB_DOMAIN} {
-    reverse_proxy {env.GITLAB_BACKEND}
-    tls {env.CERT_FILE} {env.CERT_KEY}
+{$GITLAB_HOST} {
+    reverse_proxy {$GITLAB_BACKEND}
+    tls {$CERT_FILE} {$CERT_KEY}
 }

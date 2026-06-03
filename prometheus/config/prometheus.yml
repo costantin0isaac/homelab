@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'proxmox'
+    static_configs:
+      - targets: ['pve-exporter:9221']
+    metrics_path: '/pve'
+    params:
+      target: ['192.168.1.21']
+      cluster: ['1']
+      node: ['1']
