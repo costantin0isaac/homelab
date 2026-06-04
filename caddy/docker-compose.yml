@@ -1,7 +1,9 @@
 
 services:
   caddy:
-    image: caddy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: caddy
     restart: unless-stopped
     env_file:
@@ -14,7 +16,6 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-      - ./certs:/etc/caddy/certs:ro
     networks:
       - costantino-net
 

@@ -1,24 +1,36 @@
+{
+    email isaac@costantino.es
+    acme_dns cloudflare {$CF_API_TOKEN}
+}
+
 {$VIKUNJA_HOST} {
     reverse_proxy {$VIKUNJA_BACKEND}
-    tls {$CERT_FILE} {$CERT_KEY}
 }
 
 {$GRAFANA_HOST} {
     reverse_proxy {$GRAFANA_BACKEND}
-    tls {$CERT_FILE} {$CERT_KEY}
 }
 
 {$PROMETHEUS_HOST} {
     reverse_proxy {$PROMETHEUS_BACKEND}
-    tls {$CERT_FILE} {$CERT_KEY}
 }
 
 {$GITLAB_HOST} {
     reverse_proxy {$GITLAB_BACKEND}
-    tls {$CERT_FILE} {$CERT_KEY}
 }
 
 {$STIRLING_HOST} {
     reverse_proxy {$STIRLING_BACKEND}
-    tls {$CERT_FILE} {$CERT_KEY}
+}
+
+{$ADGUARD_HOST} {
+    reverse_proxy {$ADGUARD_BACKEND}
+}
+
+{$PROXMOX_HOST} {
+    reverse_proxy {$PROXMOX_BACKEND} {
+        transport http {
+	    tls_insecure_skip_verify
+	}
+    }
 }
