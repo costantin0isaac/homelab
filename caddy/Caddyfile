@@ -23,6 +23,11 @@
     reverse_proxy {$GITLAB_REGISTRY_BACKEND}
 }
 
+{$STATUS_HOST} {
+    reverse_proxy {$STATUS_BACKEND}
+}
+
+
 {$STIRLING_HOST} {
     reverse_proxy {$STIRLING_BACKEND}
 }
@@ -37,8 +42,4 @@
 	    tls_insecure_skip_verify
 	}
     }
-}
-
-{$STATUS_HOST} {
-    reverse_proxy {$STATUS_BACKEND}
 }
