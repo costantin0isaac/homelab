@@ -34,3 +34,7 @@
 	}
     }
 }
+
+{$STATUS_HOST} {
+    reverse_proxy {$STATUS_BACKEND}
+}

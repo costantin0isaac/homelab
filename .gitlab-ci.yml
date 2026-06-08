@@ -1,10 +1,13 @@
 stages:
   - validate
+  - build
   - deploy
 
 variables:
   DOCKER_DIR: /home/isaac/docker-configs
   ENV_FILE: /home/isaac/docker-configs/.env
+  REGISTRY: registry.gitlab.costantino.es
+  STATUS_IMAGE: $REGISTRY/homelab/docker-configs/status-page
 
 before_script:
   - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.costantino.es/".insteadOf "https://gitlab.costantino.es/"
@@ -21,9 +24,23 @@ validate:
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/grafana/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/prometheus/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/pve-exporter/docker-compose.yml config > /dev/null
-    - echo "✅All compose files are valid"
+    - echo "✅ All compose files are valid"
 
-# --- STAGE 2: DEPLOY ---
+# --- STAGE 2: BUILD ---
+build:
+  stage: build
+  tags:
+    - docker-ubuntu
+  script:
+    - echo "Building images..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
+    - docker build -t $STATUS_IMAGE:latest -t $STATUS_IMAGE:$CI_COMMIT_SHORT_SHA $DOCKER_DIR/status-page/
+    - docker push $IMAGE:latest
+    - docker push $IMAGE:$CI_COMMIT_SHORT_SHA
+    - echo "✅ Published image"
+
+
+# --- STAGE 3: DEPLOY ---
 deploy:
   stage: deploy
   tags:
@@ -31,11 +48,13 @@ deploy:
   script:
     - echo "Deploying changes..."
     - sudo -u isaac git -C $DOCKER_DIR pull origin main
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/caddy/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/vikunja/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/grafana/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/prometheus/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/pve-exporter/docker-compose.yml up -d --remove-orphans
-    - echo "✅Deploy completed"
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/status-page/docker-compose.yml up -d --remove-orphans
+    - echo "✅ Deploy completed"
   only:
     - main

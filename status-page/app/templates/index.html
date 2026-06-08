@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homelab Status</title>
+    <meta http-equiv="refresh" content="30">
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; background: #1a1a2e; color: #eee; }
+        h1 { color: #e94560; }
+        .service { display: flex; justify-content: space-between; padding: 12px; margin: 8px 0; background: #16213e; border-radius: 8px; }
+        .online  { color: #0f9b58; font-weight: bold; }
+        .offline { color: #e94560; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🖥️ Homelab Status</h1>
+    {% for s in services %}
+    <div class="service">
+        <a href="{{ s.url }}" style="color:#eee">{{ s.name }}</a>
+        {% if s.online %}
+        <span class="online">● Online</span>
+        {% else %}
+        <span class="offline">● Offline</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>
+</html>
