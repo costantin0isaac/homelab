@@ -19,6 +19,10 @@
     reverse_proxy {$GITLAB_BACKEND}
 }
 
+{$GITLAB_REGISTRY_HOST} {
+    reverse_proxy {$GITLAB_REGISTRY_BACKEND}
+}
+
 {$STIRLING_HOST} {
     reverse_proxy {$STIRLING_BACKEND}
 }
