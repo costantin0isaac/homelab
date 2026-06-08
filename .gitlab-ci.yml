@@ -6,8 +6,7 @@ variables:
   DOCKER_DIR: /home/isaac/docker-configs
 
 before_script:
-  - git config --global credential.helper store
-  - echo "https://${CI_DEPLOY_USER}:${CI_DEPLOY_PASSWORD}@gitlab.costantino.es" > ~/.git-credentials"
+  - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.costantino.es/".insteadOf "https://gitlab.costantino.es/"
 
 # --- STAGE 1: VALIDATE ---
 validate:
