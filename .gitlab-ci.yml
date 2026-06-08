@@ -29,8 +29,7 @@ deploy:
     - docker-ubuntu
   script:
     - echo "Deploying changes..."
-    - cd $DOCKER_DIR
-    - git pull origin main
+    - sudo -u isaac git -C $DOCKER_DIR pull origin main
     - docker compose -f caddy/docker-compose.yml up -d --remove-orphans
     - docker compose -f vikunja/docker-compose.yml up -d --remove-orphans
     - docker compose -f grafana/docker-compose.yml up -d --remove-orphans
