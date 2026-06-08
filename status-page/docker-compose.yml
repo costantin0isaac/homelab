@@ -1,7 +1,7 @@
 services:
   status-page:
     image: registry.gitlab.costantino.es/homelab/docker-configs/status-page:latest
-    container-name:status-page
+    container-name: status-page
     restart: unless-stopped
     networks:
     - costantino-net
