@@ -1,5 +1,5 @@
 - name: Add Docker repository
-  ansible.builtin.deb822_repository:
+  deb822_repository:
     name: docker
     types: deb
     uris: https://download.docker.com/linux/ubuntu
@@ -12,7 +12,7 @@
   register: docker_repo
 
 - name: Update apt cache after adding Docker repo
-  ansible.builtin.apt:
+  apt:
     update_cache: yes
   become: yes
   when: docker_repo.changed
@@ -25,6 +25,7 @@
     - containerd.io
     - docker-compose-plugin
     state: present
+    update_cache: yes
   become: yes
 
 - name: Enable & run docker service
