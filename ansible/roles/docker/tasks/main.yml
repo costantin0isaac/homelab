@@ -1,0 +1,48 @@
+- name: Add Docker repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_distribution_release }}"
+    components: stable
+    architectures: amd64
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  become: yes
+  register: docker_repo
+
+- name: Update apt cache after adding Docker repo
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+  when: docker_repo.changed
+
+- name: Install Docker
+  apt:
+    name:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-compose-plugin
+    state: present
+  become: yes
+
+- name: Enable & run docker service
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Add user to docker group
+  user:
+    name: "{{ main_user }}"
+    groups: docker
+    append: yes
+  become: yes
+
+- name: Create docker network
+  community.docker.docker_network:
+    name: "{{ docker_network }}"
+    state: present
+  become: yes

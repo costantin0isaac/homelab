@@ -1,0 +1,41 @@
+- name: Clone repository
+  git:
+    repo: "{{ gitlab_repo }}"
+    dest: "{{ docker_dir }}"
+    version: main
+    accept_hostkey: yes
+  become_user: "{{ main_user }}"
+  become: yes
+
+- name: Create .env symlinks
+  file:
+    src: "{{ docker_dir }}/.env"
+    dest: "{{ docker_dir }}/{{ item }}/.env"
+    state: link
+  loop:
+  - caddy
+  - vikunja
+  - grafana
+  - prometheus
+  - pve-exporter
+  - stirling
+  - cadvisor
+  - status-page
+  become_user: "{{ main_user }}"
+  become: yes
+
+- name: Start services
+  command: >
+    docker compose
+    --env-file {{ docker_dir }}/.env
+    -f  {{ docker_dir }}/{{ item }}/docker-compose.yml
+    up -d --remove-orphans
+  loop:
+  - vikunja
+  - grafana
+  - prometheus
+  - pve_exporter
+  - stirling
+  - cadvisor
+  - caddy
+  - status-page

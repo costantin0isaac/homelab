@@ -1,0 +1,8 @@
+main_user: isaac
+main_group: isaac
+home_dir: /home/isaac
+
+docker_network: costantino-net
+docker-dir: "{{ home_dir }}/docker-configs"
+
+gitlab_repo: "https://gitlab.costantino.es/homelab/docker-configs.git"
