@@ -35,6 +35,18 @@
   become: yes
   become_user: "{{ main_user }}"
 
+- name: Docker hub login
+  command: docker login -u {{ vault_dockerhub_user }} -p {{ vault_dockerhub_token }}
+  become: yes
+  become_user: "{{ main_user }}"
+  no_log: true
+
+- name: Gitlab registry login
+  command: docker login {{ vault_gitlab_registry_host }} -u {{ vault_gitlab_deploy_user }} -p {{ vault_gitlab_deploy_token }}
+  become: yes
+  become_user: "{{ main_user }}"
+  no_log: true
+
 - name: Start docker services
   command: >
     docker compose

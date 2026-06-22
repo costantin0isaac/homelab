@@ -1,0 +1,8 @@
+main_user: isaac
+main_group: isaac
+home_dir: /home/isaac
+
+docker_network: costantino-net
+docker_dir: "{{ home_dir }}/docker-configs"
+
+gitlab_repo: "https://{{ vault_gitlab_deploy_user }}:{{ vault_gitlab_deploy_token }}@{{ vault_gitlab_host }}/homelab/docker-configs.git"
