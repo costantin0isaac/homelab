@@ -1,6 +1,7 @@
 # Secrets
 .env
 *.env
+.ansible_vault_pass
 
 # Certificates
 *.pem

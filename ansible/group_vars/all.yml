@@ -5,4 +5,35 @@ home_dir: /home/isaac
 docker_network: costantino-net
 docker-dir: "{{ home_dir }}/docker-configs"
 
-gitlab_repo: "https://gitlab.costantino.es/homelab/docker-configs.git"
+# GitLab
+gitlab_repo: "https://{{ vault_gitlab_deploy_user }}:{{ vault_gitlab_deploy_token }}@gitlab.costantino.es/homelab/docker-configs.git"
+
+# Hosts Caddy
+vikunja_host: vikunja.costantino.es
+grafana_host: grafana.costantino.es
+prometheus_host: prometheus.costantino.es
+gitlab_host: gitlab.costantino.es
+gitlab_registry_host: registry.gitlab.costantino.es
+stirling_host: stirling.costantino.es
+status_host: status.costantino.es
+proxmox_host: proxmox.costantino.es
+adguard_host: adguard.costantino.es
+
+# URLs
+vikunja_domain: "https://vikunja.costantino.es/"
+grafana_domain: "https://grafana.costantino.es/"
+prometheus_domain: "https://prometheus.costantino.es/"
+gitlab_domain: "https://gitlab.costantino.es/"
+stirling_domain: "https://stirling.costantino.es/"
+
+# vault
+gitlab_ip: "{{ vault_gitlab_ip }}"
+proxmox_ip: "{{ vault_proxmox_ip }}"
+vikunja_db_user: "{{ vault_vikunja_db_user }}"
+vikunja_db_password: "{{ vault_vikunja_db_password }}"
+vikunja_db_name: "{{ vault_vikunja_db_name }}"
+grafana_admin_password: "{{ vault_grafana_admin_password }}"
+pve_user: "{{ vault_pve_user }}"
+pve_token_name: "{{ vault_pve_token_name }}"
+pve_token_value: "{{ vault_pve_token_value }}"
+cf_api_token: "{{ vault_cf_api_token }}"
