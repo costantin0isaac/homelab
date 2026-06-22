@@ -1,5 +1,5 @@
 {
-    email {CF_ADMIN_EMAIL}
+    email {$CF_ADMIN_EMAIL}
     acme_dns cloudflare {$CF_API_TOKEN}
 }
 

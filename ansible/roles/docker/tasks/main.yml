@@ -42,6 +42,9 @@
     append: yes
   become: yes
 
+- name: Restart ssh connection to apply docker group
+  meta: reset_connection
+
 - name: Create docker network
   community.docker.docker_network:
     name: "{{ docker_network }}"
