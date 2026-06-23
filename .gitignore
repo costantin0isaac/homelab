@@ -2,6 +2,8 @@
 .env
 *.env
 .ansible_vault_pass
+.env.swp
+*.swp
 
 # Certificates
 *.pem
