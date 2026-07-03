@@ -3,6 +3,15 @@
     acme_dns cloudflare {$CF_API_TOKEN}
 }
 
+{$OPENWEBUI_HOST} {
+    reverse_proxy {$OPENWEBUI_BACKEND}
+}
+
+searxng.costantino.es {
+    reverse_proxy {$SEARXNG_BACKEND}
+}
+
+
 {$VIKUNJA_HOST} {
     reverse_proxy {$VIKUNJA_BACKEND}
 }
