@@ -7,7 +7,7 @@
     reverse_proxy {$OPENWEBUI_BACKEND}
 }
 
-searxng.costantino.es {
+{$SEARXNG_HOST} {
     reverse_proxy {$SEARXNG_BACKEND}
 }
 
