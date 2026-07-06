@@ -13,3 +13,5 @@ certs/
 
 # Local data
 *.log
+
+stirling/stirling-data/

@@ -4,11 +4,11 @@ services:
     container_name: stirling-pdf
     volumes:
       # Persistent data storage
-      - ./stirling-data/tessdata:/usr/share/tessdata    # OCR language files
-      - ./stirling-data/configs:/configs                 # Settings & database
-      - ./stirling-data/logs:/logs                       # Application logs
-      - ./stirling-data/customFiles:/customFiles:rw      # Custom branding files
-      - ./stirling-data/pipeline:/pipeline               # Automation configs
+      - /home/isaac/stirling-data/tessdata:/usr/share/tessdata    # OCR language files
+      - /home/isaac/stirling-data/configs:/configs                 # Settings & database
+      - /home/isaac/stirling-data/logs:/logs                       # Application logs
+      - /home/isaac/stirling-data/customFiles:/customFiles:rw      # Custom branding files
+      - /home/isaac/stirling-data/pipeline:/pipeline               # Automation configs
     environment:
       # Core Settings
       - SECURITY_ENABLELOGIN=true
