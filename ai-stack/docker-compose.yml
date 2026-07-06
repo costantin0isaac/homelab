@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./searxng:/etc/searxng:rw
+    env_file:
+      - /home/isaac/docker-configs/.env
     environment:
       - SEARXNG_BASE_URL=${SEARXNG_URL}
       - SEARXNG_SECRET=${SEARXNG_SECRET}
@@ -20,6 +22,8 @@ services:
     - "3000:8080"
     volumes:
     - open-webui-data:/app/backend/data
+    env_file:
+      - /home/isaac/docker-configs/.env
     environment:
       - OLLAMA_BASE_URL=${OLLAMA_URL}
       - ENABLE_WEB_SEARCH=true
