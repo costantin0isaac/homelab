@@ -9,7 +9,7 @@ services:
       - SEARXNG_BASE_URL=${SEARXNG_URL}
       - SEARXNG_SECRET=${SEARXNG_SECRET}
     networks:
-    - ai
+    - costantino-net
   
 
   open-webui:
