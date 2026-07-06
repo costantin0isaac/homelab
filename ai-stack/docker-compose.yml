@@ -30,7 +30,7 @@ services:
     depends_on:
       - searxng
     networks:
-      - ai
+      - costantino-net
 
 
 volumes:
