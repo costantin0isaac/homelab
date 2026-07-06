@@ -37,5 +37,5 @@ volumes:
   open-webui-data:
 
 networks:
-  ai:
-    driver: bridge
+  costantino-net:
+    external: true
