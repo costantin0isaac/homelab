@@ -56,3 +56,7 @@
 {$DEVCRAFT_HOST} {
     reverse_proxy {$DEVCRAFT_BACKEND}
 }
+
+{$DEVCRAFT_DEVELOPMENT_HOST} {
+    reverse_proxy {$DEVCRAFT_DEVELOPMENT_BACKEND}
+}
