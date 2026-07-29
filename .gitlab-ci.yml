@@ -28,6 +28,7 @@ validate:
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/status-page/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/stirling/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/ai-stack/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml config > /dev/null
     - echo "✅ All compose files are valid"
 
 # --- STAGE 2: BUILD ---
@@ -62,6 +63,7 @@ deploy:
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cadvisor/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/stirling/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/ai-stack/docker-compose.yml up -d --remove-orphans
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans
     - echo "✅ Deploy completed"
   only:
     - main
