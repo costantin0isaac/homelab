@@ -29,5 +29,5 @@ volumes:
   arcane-data:
 
 networks:
-  proxy:
+  costantino-net:
     external: true
