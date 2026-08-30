@@ -60,3 +60,7 @@
 {$DEVCRAFT_DEVELOPMENT_HOST} {
     reverse_proxy {$DEVCRAFT_DEVELOPMENT_BACKEND}
 }
+
+{$ARCANE_HOST} {
+    reverse_proxy {$ARCANE_BACKEND} 
+}
