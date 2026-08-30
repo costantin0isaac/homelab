@@ -19,17 +19,17 @@ validate:
     - docker-ubuntu
   script:
     - echo "Validating docker-compose files..."
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/vikunja/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/caddy/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/grafana/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/prometheus/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/pve-exporter/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cadvisor/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/status-page/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/stirling/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/ai-stack/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/arcane/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/vikunja/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/caddy/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/grafana/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/prometheus/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/pve-exporter/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/cadvisor/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/status-page/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/stirling/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/ai-stack/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/cloudflare-ddns/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/arcane/docker-compose.yml config > /dev/null
     - echo "✅ All compose files are valid"
 
 # --- STAGE 2: BUILD ---
