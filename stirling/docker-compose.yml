@@ -27,6 +27,8 @@ services:
       - SYSTEM_CUSTOMSTATICFILEPATH=/customFiles/static/  # Custom files path
 
     restart: unless-stopped
+    ports:
+      - "8081:8080"
     networks:
       - costantino-net
 

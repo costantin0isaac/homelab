@@ -3,6 +3,8 @@ services:
     image: registry.gitlab.costantino.es/homelab/docker-configs/status-page:latest
     container_name: status-page
     restart: unless-stopped
+    ports:
+      - "3002:5000"
     networks:
     - costantino-net
 
