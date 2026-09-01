@@ -7,6 +7,8 @@ variables:
   DOCKER_DIR: /home/isaac/docker-configs
   ENV_FILE: /home/isaac/docker-configs/.env
   REGISTRY: registry.gitlab.costantino.es
+  # Fail the job if a container does not reach running/healthy instead of deploying silently.
+  WAIT: "--wait --wait-timeout 180"
   STATUS_IMAGE: $REGISTRY/homelab/docker-configs/status-page
 
 before_script:
@@ -55,17 +57,41 @@ deploy:
     - echo "Deploying changes..."
     - sudo -u isaac git -C $DOCKER_DIR pull origin main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/caddy/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/vikunja/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/grafana/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/prometheus/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/pve-exporter/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/status-page/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cadvisor/docker-compose.yml up -d --remove-orphans
+    # ai-stack runs early: it releases host ports that later stacks may claim.
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/ai-stack/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/caddy/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/vikunja/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/grafana/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/prometheus/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/pve-exporter/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/status-page/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cadvisor/docker-compose.yml up -d --remove-orphans $WAIT
+    # TODO: stirling-pdf is unhealthy; no $WAIT and excluded from verification until fixed.
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/stirling/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/ai-stack/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/arcane/docker-compose.yml up -d --remove-orphans
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/arcane/docker-compose.yml up -d --remove-orphans $WAIT
+    - |
+      echo "Verifying deployed containers..."
+      # name:published-host-port — empty port means "running is enough" (no host binding)
+      EXPECTED="caddy:80 caddy:443 vikunja:3456 vikunja-postgres: grafana:3000 prometheus:9090
+                pve-exporter:9221 status-page:3003 cadvisor:
+                searxng:3002 open-webui:3001 cloudflare-ddns: arcane:"
+      # stirling-pdf:8081 intentionally omitted — unhealthy, see TODO above.
+      failed=0
+      for entry in $EXPECTED; do
+        name="${entry%%:*}"; port="${entry##*:}"
+        state=$(docker inspect -f '{{.State.Status}}' "$name" 2>/dev/null || echo missing)
+        if [ "$state" != "running" ]; then
+          echo "❌ $name: expected running, got $state"; failed=1; continue
+        fi
+        if [ -n "$port" ] && ! docker port "$name" 2>/dev/null | grep -qE ":${port}\$"; then
+          echo "❌ $name: running but host port $port is not published (stale container?)"
+          docker port "$name" 2>/dev/null | sed 's/^/     /'
+          failed=1; continue
+        fi
+        echo "✅ $name${port:+ (:$port)}"
+      done
+      [ "$failed" -eq 0 ] || { echo "Deploy verification FAILED"; exit 1; }
     - echo "✅ Deploy completed"
   only:
     - main
