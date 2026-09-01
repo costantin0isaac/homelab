@@ -68,7 +68,9 @@ deploy:
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cadvisor/docker-compose.yml up -d --remove-orphans $WAIT
     # TODO: stirling-pdf is unhealthy; no $WAIT and excluded from verification until fixed.
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/stirling/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans $WAIT
+    # No healthcheck: --wait spuriously reports "exited (0)" for the already-running
+    # container, so rely on the verification loop below instead.
+    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans
     - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/arcane/docker-compose.yml up -d --remove-orphans $WAIT
     - |
       echo "Verifying deployed containers..."
