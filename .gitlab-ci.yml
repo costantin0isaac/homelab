@@ -143,7 +143,9 @@ deploy:core:
     ENV_FILE: /home/isaac/docker-core/.env
   script:
     - "echo Deploying host: docker-core..."
-    - sudo -u isaac git -C $REPO_DIR fetch origin
+    # El rewrite del before_script vive en el config global de gitlab-runner;
+    # el fetch corre como isaac, así que se pasa el token inline.
+    - sudo -u isaac git -C $REPO_DIR -c url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.costantino.es/".insteadOf="https://gitlab.costantino.es/" fetch origin
     - sudo -u isaac git -C $REPO_DIR reset --hard origin/main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/caddy/docker-compose.yml up -d --remove-orphans $WAIT
