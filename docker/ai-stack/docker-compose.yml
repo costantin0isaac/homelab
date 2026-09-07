@@ -6,7 +6,10 @@ services:
     ports:
       - "3002:8080"
     volumes:
-      - ./searxng:/etc/searxng:rw
+      # Named volume, not the worktree: searxng's entrypoint runs as root and
+      # rewrites /etc/searxng, which broke the deploy's git reset --hard.
+      # The deploy seeds settings.yml here before bringing the stack up.
+      - searxng-config:/etc/searxng:rw
     env_file:
       - /home/isaac/docker-configs/.env
     environment:
@@ -41,6 +44,7 @@ services:
 
 volumes:
   open-webui-data:
+  searxng-config:
 
 networks:
   costantino-net:

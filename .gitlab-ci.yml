@@ -63,7 +63,7 @@ deploy:main:
         - docker/**/*
         - .gitlab-ci.yml
   variables:
-    # Clon con sparse-checkout: solo docker/ está materializado en disco.
+    # Sparse-checkout clone: only docker/ is materialized on disk.
     REPO_DIR: /home/isaac/docker-configs
     HOST_DIR: /home/isaac/docker-configs/docker
     ENV_FILE: /home/isaac/docker-configs/.env
@@ -72,6 +72,10 @@ deploy:main:
     - sudo -u isaac git -C $REPO_DIR fetch origin
     - sudo -u isaac git -C $REPO_DIR reset --hard origin/main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
+    # The repo is the source of truth for settings.yml; it is copied into the
+    # volume on every deploy (searxng rewrites it at runtime, hence no bind mount).
+    - docker volume create ai-stack_searxng-config
+    - docker run --rm -v ai-stack_searxng-config:/dst -v $HOST_DIR/ai-stack/searxng:/src:ro alpine:3 cp /src/settings.yml /dst/settings.yml
     # ai-stack runs early: it releases host ports that later stacks may claim.
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/ai-stack/docker-compose.yml up -d --remove-orphans $WAIT
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/vikunja/docker-compose.yml up -d --remove-orphans $WAIT
@@ -137,14 +141,14 @@ deploy:core:
         - docker-core/**/*
         - .gitlab-ci.yml
   variables:
-    # Clon con sparse-checkout: solo docker-core/ está materializado en disco.
+    # Sparse-checkout clone: only docker-core/ is materialized on disk.
     REPO_DIR: /home/isaac/docker-core
     HOST_DIR: /home/isaac/docker-core/docker-core
     ENV_FILE: /home/isaac/docker-core/.env
   script:
     - "echo Deploying host: docker-core..."
-    # El rewrite del before_script vive en el config global de gitlab-runner;
-    # el fetch corre como isaac, así que se pasa el token inline.
+    # The before_script rewrite lives in gitlab-runner's global config; this
+    # fetch runs as isaac, so the token is passed inline.
     - sudo -u isaac git -C $REPO_DIR -c url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.costantino.es/".insteadOf="https://gitlab.costantino.es/" fetch origin
     - sudo -u isaac git -C $REPO_DIR reset --hard origin/main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
