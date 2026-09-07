@@ -1,4 +1,3 @@
-
 services:
   caddy:
     build:
@@ -7,7 +6,7 @@ services:
     container_name: caddy
     restart: unless-stopped
     env_file:
-      - /home/isaac/docker-configs/.env
+      - /home/isaac/docker-core/.env
     ports:
       - "80:80"
       - "443:443"
@@ -17,12 +16,12 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - costantino-net
+      - core-net
 
 volumes:
   caddy_data:
   caddy_config:
 
 networks:
-  costantino-net:
+  core-net:
     external: true

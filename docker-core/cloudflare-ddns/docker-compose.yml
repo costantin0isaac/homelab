@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     network_mode: host
     env_file:
-      - /home/isaac/docker-configs/.env
+      - /home/isaac/docker-core/.env
     environment:
       - CLOUDFLARE_API_TOKEN=${CF_API_TOKEN}
       - DOMAINS=vpn.costantino.es

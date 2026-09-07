@@ -4,8 +4,6 @@ stages:
   - deploy
 
 variables:
-  DOCKER_DIR: /home/isaac/docker-configs
-  ENV_FILE: /home/isaac/docker-configs/.env
   REGISTRY: registry.gitlab.costantino.es
   # Fail the job if a container does not reach running/healthy instead of deploying silently.
   WAIT: "--wait --wait-timeout 180"
@@ -14,68 +12,82 @@ variables:
 before_script:
   - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.costantino.es/".insteadOf "https://gitlab.costantino.es/"
 
-# --- STAGE 1: VALIDATE ---
-validate:
+# ============================================================
+# HOST: docker (VM 103) — runner tag: docker-ubuntu
+# ============================================================
+
+validate:main:
   stage: validate
   tags:
     - docker-ubuntu
+  rules:
+    - changes:
+        - docker/**/*
+        - .gitlab-ci.yml
   script:
-    - echo "Validating docker-compose files..."
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/vikunja/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/caddy/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/grafana/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/prometheus/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/pve-exporter/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/cadvisor/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/status-page/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/stirling/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/ai-stack/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/cloudflare-ddns/docker-compose.yml config > /dev/null
-    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/arcane/docker-compose.yml config > /dev/null
-    - echo "✅ All compose files are valid"
+    - echo "Validating docker-compose files in docker/..."
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/vikunja/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/grafana/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/prometheus/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/pve-exporter/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/cadvisor/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/status-page/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/stirling/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/ai-stack/docker-compose.yml config > /dev/null
+    - echo "✅ All compose files in docker/ are valid"
+  variables:
+    ENV_FILE: /home/isaac/docker-configs/.env
 
-# --- STAGE 2: BUILD ---
-build:
+build:status-page:
   stage: build
   tags:
     - docker-ubuntu
+  rules:
+    - changes:
+        - docker/status-page/**/*
   script:
-    - echo "Building images..."
+    - echo "Building status-page image..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
-    - docker build -t $STATUS_IMAGE:latest -t $STATUS_IMAGE:$CI_COMMIT_SHORT_SHA $DOCKER_DIR/status-page/
+    - docker build -t $STATUS_IMAGE:latest -t $STATUS_IMAGE:$CI_COMMIT_SHORT_SHA $CI_PROJECT_DIR/docker/status-page/
     - docker push $STATUS_IMAGE:latest
     - docker push $STATUS_IMAGE:$CI_COMMIT_SHORT_SHA
     - echo "✅ Published image"
 
-
-# --- STAGE 3: DEPLOY ---
-deploy:
+deploy:main:
   stage: deploy
   tags:
     - docker-ubuntu
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - docker/**/*
+        - .gitlab-ci.yml
+  variables:
+    # Clon con sparse-checkout: solo docker/ está materializado en disco.
+    REPO_DIR: /home/isaac/docker-configs
+    HOST_DIR: /home/isaac/docker-configs/docker
+    ENV_FILE: /home/isaac/docker-configs/.env
   script:
-    - echo "Deploying changes..."
-    - sudo -u isaac git -C $DOCKER_DIR pull origin main
+    - echo "Deploying host: docker..."
+    - sudo -u isaac git -C $REPO_DIR fetch origin
+    - sudo -u isaac git -C $REPO_DIR reset --hard origin/main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
     # ai-stack runs early: it releases host ports that later stacks may claim.
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/ai-stack/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/caddy/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/vikunja/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/grafana/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/prometheus/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/pve-exporter/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/status-page/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cadvisor/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/ai-stack/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/vikunja/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/grafana/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/prometheus/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/pve-exporter/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/status-page/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/cadvisor/docker-compose.yml up -d --remove-orphans $WAIT
     # TODO: stirling-pdf is unhealthy; no $WAIT and excluded from verification until fixed.
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/stirling/docker-compose.yml up -d --remove-orphans
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans $WAIT
-    - docker compose --env-file $ENV_FILE -f $DOCKER_DIR/arcane/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/stirling/docker-compose.yml up -d --remove-orphans
     - |
-      echo "Verifying deployed containers..."
+      echo "Verifying deployed containers on docker..."
       # name:published-host-port — empty port means "running is enough" (no host binding)
-      EXPECTED="caddy:80 caddy:443 vikunja:3456 vikunja-postgres: grafana:3000 prometheus:9090
+      EXPECTED="vikunja:3456 vikunja-postgres: grafana:3000 prometheus:9090
                 pve-exporter:9221 status-page:3003 cadvisor:
-                searxng:3002 open-webui:3001 cloudflare-ddns: arcane:"
+                searxng:3002 open-webui:3001"
       # stirling-pdf:8081 intentionally omitted — unhealthy, see TODO above.
       failed=0
       for entry in $EXPECTED; do
@@ -91,7 +103,68 @@ deploy:
         fi
         echo "✅ $name${port:+ (:$port)}"
       done
-      [ "$failed" -eq 0 ] || { echo "Deploy verification FAILED"; exit 1; }
-    - echo "✅ Deploy completed"
-  only:
-    - main
+      [ "$failed" -eq 0 ] || { echo "Deploy verification FAILED (host: docker)"; exit 1; }
+    - echo "✅ Deploy completed on docker"
+
+# ============================================================
+# HOST: docker-core (VM 109) — runner tag: docker-core
+# ============================================================
+
+validate:core:
+  stage: validate
+  tags:
+    - docker-core
+  rules:
+    - changes:
+        - docker-core/**/*
+        - .gitlab-ci.yml
+  script:
+    - echo "Validating docker-compose files in docker-core/..."
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/caddy/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/cloudflare-ddns/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/arcane/docker-compose.yml config > /dev/null
+    - echo "✅ All compose files in docker-core/ are valid"
+  variables:
+    ENV_FILE: /home/isaac/docker-core/.env
+
+deploy:core:
+  stage: deploy
+  tags:
+    - docker-core
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - docker-core/**/*
+        - .gitlab-ci.yml
+  variables:
+    # Clon con sparse-checkout: solo docker-core/ está materializado en disco.
+    REPO_DIR: /home/isaac/docker-core
+    HOST_DIR: /home/isaac/docker-core/docker-core
+    ENV_FILE: /home/isaac/docker-core/.env
+  script:
+    - echo "Deploying host: docker-core..."
+    - sudo -u isaac git -C $REPO_DIR fetch origin
+    - sudo -u isaac git -C $REPO_DIR reset --hard origin/main
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/caddy/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/arcane/docker-compose.yml up -d --remove-orphans $WAIT
+    - |
+      echo "Verifying deployed containers on docker-core..."
+      EXPECTED="caddy:80 caddy:443 cloudflare-ddns: arcane:"
+      failed=0
+      for entry in $EXPECTED; do
+        name="${entry%%:*}"; port="${entry##*:}"
+        state=$(docker inspect -f '{{.State.Status}}' "$name" 2>/dev/null || echo missing)
+        if [ "$state" != "running" ]; then
+          echo "❌ $name: expected running, got $state"; failed=1; continue
+        fi
+        if [ -n "$port" ] && ! docker port "$name" 2>/dev/null | grep -qE ":${port}\$"; then
+          echo "❌ $name: running but host port $port is not published (stale container?)"
+          docker port "$name" 2>/dev/null | sed 's/^/     /'
+          failed=1; continue
+        fi
+        echo "✅ $name${port:+ (:$port)}"
+      done
+      [ "$failed" -eq 0 ] || { echo "Deploy verification FAILED (host: docker-core)"; exit 1; }
+    - echo "✅ Deploy completed on docker-core"

@@ -5,10 +5,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - arcane-data:/app/data
-      - /home/isaac/docker-configs:/home/isaac/docker-configs
+      - /home/isaac/docker-core:/home/isaac/docker-core
     environment:
       - APP_URL=https://arcane.costantino.es
-      - PROJECTS_DIRECTORY=/home/isaac/docker-configs
+      - PROJECTS_DIRECTORY=/home/isaac/docker-core
       - PUID=${ARCANE_PUID}
       - PGID=${ARCANE_PGID}
       - ENCRYPTION_KEY=${ARCANE_ENCRYPTION_KEY}
@@ -23,11 +23,11 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - costantino-net
+      - core-net
 
 volumes:
   arcane-data:
 
 networks:
-  costantino-net:
+  core-net:
     external: true

@@ -14,4 +14,4 @@ certs/
 # Local data
 *.log
 
-stirling/stirling-data/
+stirling/stirling-data/*.swp
