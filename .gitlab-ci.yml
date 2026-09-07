@@ -68,7 +68,7 @@ deploy:main:
     HOST_DIR: /home/isaac/docker-configs/docker
     ENV_FILE: /home/isaac/docker-configs/.env
   script:
-    - echo "Deploying host: docker..."
+    - "echo Deploying host: docker..."
     - sudo -u isaac git -C $REPO_DIR fetch origin
     - sudo -u isaac git -C $REPO_DIR reset --hard origin/main
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $REGISTRY
