@@ -127,6 +127,7 @@ validate:core:
     - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/caddy/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/cloudflare-ddns/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/arcane/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker-core/ntfy/docker-compose.yml config > /dev/null
     - echo "✅ All compose files in docker-core/ are valid"
   variables:
     ENV_FILE: /home/isaac/docker-core/.env
@@ -155,6 +156,7 @@ deploy:core:
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/caddy/docker-compose.yml up -d --remove-orphans $WAIT
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/cloudflare-ddns/docker-compose.yml up -d --remove-orphans $WAIT
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/arcane/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/ntfy/docker-compose.yml up -d --remove-orphans $WAIT
     - |
       echo "Verifying deployed containers on docker-core..."
       EXPECTED="caddy:80 caddy:443 cloudflare-ddns: arcane:"
