@@ -1,0 +1,31 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:v2.25.0
+    container_name: ntfy
+    command: serve
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Madrid
+    volumes:
+      - ./server.yml:/etc/ntfy/server.yml:ro
+      - ntfy-cache:/var/cache/ntfy
+      - ntfy-data:/var/lib/ntfy
+    ports:
+      - "192.168.1.126:8080:8080"
+      - "192.168.1.126:9101:9101"
+    networks:
+      - core-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8080/v1/health 2>/dev/null | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  ntfy-cache:
+  ntfy-data:
+
+networks:
+  core-net:
+    external: true

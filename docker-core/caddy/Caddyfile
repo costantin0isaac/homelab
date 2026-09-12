@@ -64,3 +64,9 @@
 {$ARCANE_HOST} {
     reverse_proxy {$ARCANE_BACKEND} 
 }
+
+{$NTFY_HOST} {
+    reverse_proxy {$NTFY_BACKEND} {
+        flush_interval -1
+    }
+}

@@ -1,0 +1,23 @@
+base-url: "https://ntfy.costantino.es"
+listen-http: ":8080"
+behind-proxy: true
+
+cache-file: "/var/cache/ntfy/cache.db"
+cache-duration: "12h"
+
+attachment-cache-dir: "/var/cache/ntfy/attachments"
+attachment-total-size-limit: "1G"
+attachment-file-size-limit: "15M"
+attachment-expiry-duration: "3h"
+
+auth-file: "/var/lib/ntfy/user.db"
+auth-default-access: "deny-all"
+
+enable-signup: false
+enable-login: true
+enable-reservations: true
+
+enable-metrics: true
+metrics-listen-http: ":9101"
+
+log-level: info
