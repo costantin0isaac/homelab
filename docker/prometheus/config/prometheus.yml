@@ -19,3 +19,10 @@ scrape_configs:
   - job_name: 'cadvisor'
     static_configs:
       - targets: ['cadvisor:8080']
+  
+  - job_name: talaia
+    static_configs:
+      - targets: ["192.168.1.124:9999"]
+
+rule_files:
+  - /etc/prometheus/talaia-rules.yml

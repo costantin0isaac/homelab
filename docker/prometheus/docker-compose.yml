@@ -11,6 +11,7 @@ services:
       - '--storage.tsdb.retention.time=15d'
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/talaia-rules.yml:/etc/prometheus/talaia-rules.yml:ro
       - prometheus_data:/prometheus
     networks:
       - costantino-net
