@@ -70,3 +70,10 @@
         flush_interval -1
     }
 }
+
+{$TALAIA_HOST} {
+    @internal path /metrics /healthz /readyz
+    respond @internal 403
+
+    reverse_proxy {$TALAIA_BACKEND}
+}
