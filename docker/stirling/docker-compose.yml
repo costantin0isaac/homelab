@@ -11,7 +11,7 @@ services:
       - /home/isaac/stirling-data/pipeline:/pipeline               # Automation configs
     environment:
       # Core Settings
-      - SECURITY_ENABLELOGIN=true
+      - SECURITY_ENABLELOGIN=false
 
       # Language & Localization
       - LANGS=es_ES
