@@ -77,3 +77,11 @@
 
     reverse_proxy {$TALAIA_BACKEND}
 }
+
+{$SUPER_PRODUCTIVITY_HOST} {
+    reverse_proxy {$SUPER_PRODUCTIVITY_BACKEND}
+}
+
+{$WEBDAV_HOST} {
+    reverse_proxy {$WEBDAV_BACKEND}
+}

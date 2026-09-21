@@ -34,6 +34,7 @@ validate:main:
     - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/status-page/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/stirling/docker-compose.yml config > /dev/null
     - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/ai-stack/docker-compose.yml config > /dev/null
+    - docker compose --env-file $ENV_FILE -f $CI_PROJECT_DIR/docker/super-productivity/docker-compose.yml config > /dev/null
     - echo "✅ All compose files in docker/ are valid"
   variables:
     ENV_FILE: /home/isaac/docker-configs/.env
@@ -84,6 +85,7 @@ deploy:main:
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/pve-exporter/docker-compose.yml up -d --remove-orphans $WAIT
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/status-page/docker-compose.yml up -d --remove-orphans $WAIT
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/cadvisor/docker-compose.yml up -d --remove-orphans $WAIT
+    - docker compose --env-file $ENV_FILE -f $HOST_DIR/super-productivity/docker-compose.yml up -d --remove-orphans
     # TODO: stirling-pdf is unhealthy; no $WAIT and excluded from verification until fixed.
     - docker compose --env-file $ENV_FILE -f $HOST_DIR/stirling/docker-compose.yml up -d --remove-orphans
     - |

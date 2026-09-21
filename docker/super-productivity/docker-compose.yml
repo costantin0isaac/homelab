@@ -1,0 +1,20 @@
+services:
+  super-productivity:
+    image: johannesjo/super-productivity:latest
+    container_name: super-productivity
+    restart: unless-stopped
+    ports:
+      - "9180:80" 
+  
+  sp-webdav:
+    image: bytemark/webdav
+    container_name: sp-webdav
+    restart: unless-stopped
+    environment:
+      AUTH_TYPE: Basic
+      USERNAME: ${SP_WEBDAV_USER}
+      PASSWORD: ${SP_WEBDAV_PASSWORD}
+    volumes:
+    - ./sp-webdav-data:/var/lib/dav
+    ports:
+    - "9181:80"
