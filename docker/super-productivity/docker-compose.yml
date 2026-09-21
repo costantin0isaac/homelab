@@ -7,14 +7,36 @@ services:
       - "9180:80" 
   
   sp-webdav:
-    image: bytemark/webdav
+    image: hacdias/webdav:v5
     container_name: sp-webdav
     restart: unless-stopped
     environment:
-      AUTH_TYPE: Basic
-      USERNAME: ${SP_WEBDAV_USER}
-      PASSWORD: ${SP_WEBDAV_PASSWORD}
+      SP_WEBDAV_USER: ${SP_WEBDAV_USER}
+      SP_WEBDAV_PASSWORD: ${SP_WEBDAV_PASSWORD}
+    configs:
+      - source: sp-webdav-config
+        target: /etc/webdav/config.yaml
     volumes:
-    - ./sp-webdav-data:/var/lib/dav
+      - ./sp-webdav-data:/data
     ports:
-    - "9181:80"
+      - "8181:6065"
+
+configs:
+  sp-webdav-config:
+    content: |
+      address: 0.0.0.0
+      port: 6065
+      prefix: /
+      permissions: CRUD
+      cors:
+        enabled: true
+        credentials: true
+        allowed_headers: ['*']
+        allowed_hosts:
+          - ${SUPER_PROD_URL}
+        allowed_methods: [GET, HEAD, POST, PUT, DELETE, OPTIONS, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK]
+        exposed_headers: ['*']
+      users:
+        - username: "{env}SP_WEBDAV_USER"
+          password: "{env}SP_WEBDAV_PASSWORD"
+          directory: /data
