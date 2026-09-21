@@ -19,7 +19,7 @@ services:
     volumes:
       - ./sp-webdav-data:/data
     ports:
-      - "8181:6065"
+      - "9181:6065"
 
 configs:
   sp-webdav-config:
