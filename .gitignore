@@ -4,6 +4,7 @@
 .ansible_vault_pass
 .env.swp
 *.swp
+.env.global
 
 # Certificates
 *.pem
@@ -15,3 +16,4 @@ certs/
 *.log
 
 stirling/stirling-data/*.swp
+docker/super-productivity/sp-webdav-data/
