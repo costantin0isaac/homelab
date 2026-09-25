@@ -53,6 +53,10 @@
     }
 }
 
+{$PROXMOX_BACKUP_HOST} {
+    reverse_proxy {$PROXMOX_BACKUP_BACKEND}
+}
+
 {$DEVCRAFT_HOST} {
     reverse_proxy {$DEVCRAFT_BACKEND}
 }
