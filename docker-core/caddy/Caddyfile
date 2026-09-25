@@ -54,7 +54,11 @@
 }
 
 {$PROXMOX_BACKUP_HOST} {
-    reverse_proxy {$PROXMOX_BACKUP_BACKEND}
+    reverse_proxy {$PROXMOX_BACKUP_BACKEND}  {
+        transport http {
+	    tls_insecure_skip_verify
+	}
+    }
 }
 
 {$DEVCRAFT_HOST} {
