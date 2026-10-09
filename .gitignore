@@ -8,9 +8,20 @@
 
 # Certificates
 *.pem
-*·key
+*.key
 *-key.pem
 certs/
+
+# Terraform – state files contain secrets in plain text
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# Ansible
+*.retry
 
 # Local data
 *.log
