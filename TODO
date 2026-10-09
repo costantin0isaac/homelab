@@ -1,3 +1,0 @@
-- Reorg ansible and docker files in two separete directories or repositories
-- Point gitlab registry IP instead of domain in ansible playbook so it can finish even if caddy is down
-- Re structure IPs
