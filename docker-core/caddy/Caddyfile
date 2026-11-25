@@ -95,5 +95,9 @@
 }
 
 {$WAZUH_HOST} {
-    reverse_proxy {$WAZUH_BACKEND}
+    reverse_proxy {$WAZUH_BACKEND} {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
 }
