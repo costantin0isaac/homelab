@@ -28,3 +28,4 @@ crash.log
 
 stirling/stirling-data/*.swp
 docker/super-productivity/sp-webdav-data/
+.claude

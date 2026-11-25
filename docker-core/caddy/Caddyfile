@@ -93,3 +93,7 @@
 {$WEBDAV_HOST} {
     reverse_proxy {$WEBDAV_BACKEND}
 }
+
+{$WAZUH_HOST} {
+    reverse_proxy {$WAZUH_BACKEND}
+}
